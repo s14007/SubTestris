@@ -63,10 +63,8 @@ public class Keep extends SurfaceView implements SurfaceHolder.Callback {
             return;
         }
 
-
         canvas.drawColor(Color.MAGENTA);
 
         holder.unlockCanvasAndPost(canvas);
-
     }
 }
