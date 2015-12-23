@@ -12,10 +12,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements Board.Callback{
-    private Keep keep;
     private Board board;
     private Handler handler;
-    private Canvas canvas;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +35,8 @@ public class MainActivity extends AppCompatActivity implements Board.Callback{
                 srcImage.getWidth(), srcImage.getHeight(), matrix, true);
         ((ImageButton) findViewById(R.id.left)).setImageBitmap(leftImage);
 
-        /*board = (Board) findViewById(R.id.board);
-        board.setCallback(this);*/
-
-        /*keep = (Keep)findViewById(R.id.fl_keep);
-        setContentView(keep);*/
+        board = (Board) findViewById(R.id.board);
+        board.setCallback(this);
 
     }
 

@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -13,8 +14,9 @@ import android.view.SurfaceView;
  * Created by s14007 on 15/12/23.
  */
 public class Keep extends SurfaceView implements SurfaceHolder.Callback {
+    private int FPS = 60;
     private SurfaceHolder holder;
-    private Thread thread;
+    private DrawThread thread;
 
     public Keep(Context context) {
         super(context);
@@ -38,12 +40,7 @@ public class Keep extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         this.holder = holder;
-        thread = new Thread();
-        thread.start();
-        Canvas canvas = null;
-        canvas = holder.lockCanvas(null);
-        draw(canvas);
-
+        startThread();
     }
 
     @Override
@@ -65,6 +62,53 @@ public class Keep extends SurfaceView implements SurfaceHolder.Callback {
 
         canvas.drawColor(Color.MAGENTA);
 
-        holder.unlockCanvasAndPost(canvas);
+    }
+
+    private void startThread() {
+        stopThread();
+
+        thread = new DrawThread();
+        thread.start();
+    }
+
+    private void stopThread() {
+        if (thread != null) {
+            thread.isFinished = true;
+            thread = null;
+        }
+    }
+
+    private class DrawThread extends Thread {
+        private boolean isFinished;
+
+        @Override
+        public void run() {
+            long prevTime = 0;
+            while (!isFinished) {
+                if (holder == null ||
+                        System.currentTimeMillis() - prevTime < 1000 / FPS) {
+                    try {
+                        sleep(1000 / FPS / 3);
+                    } catch (InterruptedException e) {
+                        Log.w("DrawThread", e.getMessage(), e);
+                    }
+                    continue;
+                }
+
+                Canvas c = null;
+                try {
+                    c = holder.lockCanvas(null);
+                    synchronized (holder) {
+                        draw(c);
+                    }
+                } finally {
+                    if (c != null) {
+                        holder.unlockCanvasAndPost(c);
+                    }
+                }
+                prevTime = System.currentTimeMillis();
+            }
+        }
+
     }
 }
