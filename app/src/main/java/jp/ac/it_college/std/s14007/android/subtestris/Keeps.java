@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -17,9 +16,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by s14007 on 15/12/23.
+ * Created by s14007 on 15/12/24.
  */
-public class Board extends SurfaceView implements SurfaceHolder.Callback {
+public class Keeps extends SurfaceView implements SurfaceHolder.Callback {
     public static final int FPS = 60;
     private SurfaceHolder holder;
     private DrawThread thread;
@@ -31,17 +30,17 @@ public class Board extends SurfaceView implements SurfaceHolder.Callback {
     private long count = 0;
 
 
-    public Board(Context context) {
+    public Keeps(Context context) {
         super(context);
         initialize(context);
     }
 
-    public Board(Context context, AttributeSet attrs) {
+    public Keeps(Context context, AttributeSet attrs) {
         super(context, attrs);
         initialize(context);
     }
 
-    public Board(Context context, AttributeSet attrs, int defStyleAttr) {
+    public Keeps(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initialize(context);
     }
@@ -159,9 +158,6 @@ public class Board extends SurfaceView implements SurfaceHolder.Callback {
             tetromino.draw(canvas);
         }
         fallingTetromino.draw(canvas);
-//        keep.tetromino = fallingTetromino;
-//        keep.canvas = canvas;
-//        keep.hold(fallingTetromino, canvas);
     }
 
     public void send(Input input) {
