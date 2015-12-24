@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +30,7 @@ public class Tetromino {
     }
 
     private Board board;
+    private Keeps keeps;
     private Coordinate base;
     private Type type;
     private Orientation orientation;
@@ -40,6 +42,13 @@ public class Tetromino {
         this.board = board;
         base = new Coordinate(0, 0);
         type = type.nextType();
+        orientation = Orientation.Right;
+        calcBlockBoardCoordinates();
+    }
+
+    public Tetromino(Keeps keeps) {
+        this.keeps = keeps;
+        base = new Coordinate(0, 0);
         orientation = Orientation.Right;
         calcBlockBoardCoordinates();
     }
@@ -56,6 +65,8 @@ public class Tetromino {
     public void setPosition(int x, int y) {
         base.x = x;
         base.y = y;
+        String m = String.valueOf(type.getId());
+        Log.e("Log :", m);
         calcBlockBoardCoordinates();
     }
 
@@ -107,6 +118,7 @@ public class Tetromino {
     public void draw(Canvas canvas) {
         for (Coordinate point : blockBoardCoordinates) {
             board.translateCanvasCoordinate(canvas, dst, point.x, point.y);
+            keeps.translateCanvasCoordinate(canvas, dst, point.x, point.y);
             canvas.drawBitmap(Type.blockBitmap, type.getRect(), dst, paint);
         }
     }
