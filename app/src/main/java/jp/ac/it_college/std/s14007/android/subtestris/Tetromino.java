@@ -30,7 +30,7 @@ public class Tetromino {
     }
 
     private Board board;
-    private Keeps keeps;
+    private Keep keep;
     private Coordinate base;
     private Type type;
     private Orientation orientation;
@@ -42,13 +42,6 @@ public class Tetromino {
         this.board = board;
         base = new Coordinate(0, 0);
         type = type.nextType();
-        orientation = Orientation.Right;
-        calcBlockBoardCoordinates();
-    }
-
-    public Tetromino(Keeps keeps) {
-        this.keeps = keeps;
-        base = new Coordinate(0, 0);
         orientation = Orientation.Right;
         calcBlockBoardCoordinates();
     }
@@ -65,9 +58,8 @@ public class Tetromino {
     public void setPosition(int x, int y) {
         base.x = x;
         base.y = y;
-        String m = String.valueOf(type.getId());
-        Log.e("Log :", m);
         calcBlockBoardCoordinates();
+        keep = new Keep(type.getId());
     }
 
     public void move(Input input) {
@@ -87,9 +79,6 @@ public class Tetromino {
             case Rotate:
                 rotate();
                 break;
-           /* case Keep:
-                keep();
-                break;*/
         }
         calcBlockBoardCoordinates();
     }
@@ -107,18 +96,9 @@ public class Tetromino {
         calcBlockBoardCoordinates();
     }
 
-   /* public void keep() {
-        keep(false);
-    }*/
-
-  /*  public void keep(boolean is) {
-        if ()
-    }*/
-
     public void draw(Canvas canvas) {
         for (Coordinate point : blockBoardCoordinates) {
             board.translateCanvasCoordinate(canvas, dst, point.x, point.y);
-            keeps.translateCanvasCoordinate(canvas, dst, point.x, point.y);
             canvas.drawBitmap(Type.blockBitmap, type.getRect(), dst, paint);
         }
     }
@@ -181,8 +161,6 @@ public class Tetromino {
             case Rotate:
                 rotate(true);
                 break;
-         /*   case Keep:
-                keep(true);*/
         }
         calcBlockBoardCoordinates();
     }
@@ -198,7 +176,6 @@ public class Tetromino {
         private static final int SHUFFLE_COUNT = 100;
         private static Bitmap blockBitmap = null;
         private static LinkedList<Type> queue = new LinkedList<>();
-        //        private static LinkedList<Type> keepQueue = new LinkedList<>(); // Keepのキュー
         private static Random random = new Random();
         private static Map<Type, Rect> blockRect = new HashMap<>();
 
@@ -256,7 +233,6 @@ public class Tetromino {
             coordinates.put(Orientation.Up, Coordinate.asArray(0, -1, 0, 0, 0, 1, 1, 0));
             LOCAL_BLOCK_COORDINATES.put(T, coordinates);
 
-
         }
 
         private final int id;
@@ -286,9 +262,6 @@ public class Tetromino {
             }
         }
 
-    /*    public static void setKeepQueue() {
-        }*/
-
         public static boolean isBitmapinitialized() {
             return blockBitmap != null;
         }
@@ -305,7 +278,7 @@ public class Tetromino {
             blockRect.put(T, new Rect(0, 6 * side, side, (6 + 1) * side));
         }
 
-        public int getId() {
+        private int getId() {
             return id;
         }
 

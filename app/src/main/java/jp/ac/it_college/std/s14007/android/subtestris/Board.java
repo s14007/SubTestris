@@ -29,6 +29,7 @@ public class Board extends SurfaceView implements SurfaceHolder.Callback {
     public  Tetromino fallingTetromino;
     private ArrayList<Tetromino> tetrominoList = new ArrayList<>();
     private long count = 0;
+    private Tetromino.Type type;
 
 
     public Board(Context context) {
@@ -46,8 +47,6 @@ public class Board extends SurfaceView implements SurfaceHolder.Callback {
         initialize(context);
     }
 
-
-
     private void initialize(Context context) {
         getHolder().addCallback(this);
 
@@ -58,6 +57,7 @@ public class Board extends SurfaceView implements SurfaceHolder.Callback {
     public void spawnTetromino() {
         fallingTetromino = new Tetromino(this);
         fallingTetromino.setPosition(5, 23);
+
     }
 
     public boolean fallTetromino() {
@@ -159,9 +159,6 @@ public class Board extends SurfaceView implements SurfaceHolder.Callback {
             tetromino.draw(canvas);
         }
         fallingTetromino.draw(canvas);
-//        keep.tetromino = fallingTetromino;
-//        keep.canvas = canvas;
-//        keep.hold(fallingTetromino, canvas);
     }
 
     public void send(Input input) {
@@ -238,6 +235,5 @@ public class Board extends SurfaceView implements SurfaceHolder.Callback {
                 prevTime = System.currentTimeMillis();
             }
         }
-
     }
 }
