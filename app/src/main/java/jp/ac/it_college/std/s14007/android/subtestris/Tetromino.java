@@ -59,7 +59,7 @@ public class Tetromino {
         base.x = x;
         base.y = y;
         calcBlockBoardCoordinates();
-        keep = new Keep(type.getId());
+        board.sendId(type.getId());
     }
 
     public void move(Input input) {

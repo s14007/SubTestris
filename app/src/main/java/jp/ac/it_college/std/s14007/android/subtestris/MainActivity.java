@@ -7,6 +7,7 @@ import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -14,6 +15,8 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity implements Board.Callback{
     private Board board;
     private Handler handler;
+    private Tetromino.Type type;
+    private int id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +40,6 @@ public class MainActivity extends AppCompatActivity implements Board.Callback{
 
         board = (Board) findViewById(R.id.board);
         board.setCallback(this);
-
     }
 
     public void gameButtonClick(View v) {
@@ -73,5 +75,18 @@ public class MainActivity extends AppCompatActivity implements Board.Callback{
             }
         });
     }
+
+    public void stockId(final int id) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                String m = String.valueOf(id);
+                Log.e("Log :", m);
+            }
+        });
+//        String m = String.valueOf(id);
+//        Log.e("Log :", m);
+    }
+
 }
 
