@@ -30,6 +30,7 @@ public class Board extends SurfaceView implements SurfaceHolder.Callback {
     private ArrayList<Tetromino> tetrominoList = new ArrayList<>();
     private long count = 0;
     private Tetromino.Type type;
+    private int id;
 
 
     public Board(Context context) {
@@ -57,7 +58,10 @@ public class Board extends SurfaceView implements SurfaceHolder.Callback {
     public void spawnTetromino() {
         fallingTetromino = new Tetromino(this);
         fallingTetromino.setPosition(5, 23);
+    }
 
+    public void sendId(int id) {
+        this.id = id;
     }
 
     public boolean fallTetromino() {
@@ -183,6 +187,7 @@ public class Board extends SurfaceView implements SurfaceHolder.Callback {
             tetrominoList.add(fallingTetromino); //積み重なるようにする
             clearRows(findFullRows());  //ブロックが一行揃ったら消す
             spawnTetromino();
+//            callback.stockId(id);
         }
     }
 
@@ -202,6 +207,7 @@ public class Board extends SurfaceView implements SurfaceHolder.Callback {
 
     public interface Callback {
         void scoreAdd(int score);
+        void stockId(int id);
     }
 
     private class DrawThread extends Thread {
