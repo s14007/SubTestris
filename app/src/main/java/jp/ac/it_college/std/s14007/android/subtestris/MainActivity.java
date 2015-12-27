@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements Board.Callback{
@@ -81,26 +82,34 @@ public class MainActivity extends AppCompatActivity implements Board.Callback{
             @Override
             public void run() {
                 String message = String.valueOf(id);
+                ImageView imageView = (ImageView)findViewById(R.id.nextTetromino);
                 switch (id) {
                     case 1:
+                        imageView.setImageResource(R.drawable.i);
                         Log.e("Log :", message + ": case 1");
                         break;
                     case 2:
+                        imageView.setImageResource(R.drawable.o);
                         Log.e("Log :", message + ": case 2");
                         break;
                     case 3:
+                        imageView.setImageResource(R.drawable.z);
                         Log.e("Log :", message + ": case 3");
                         break;
                     case 4:
+                        imageView.setImageResource(R.drawable.s);
                         Log.e("Log :", message + ": case 4");
                         break;
                     case 5:
+                        imageView.setImageResource(R.drawable.l);
                         Log.e("Log :", message + ": case 5");
                         break;
                     case 6:
+                        imageView.setImageResource(R.drawable.j);
                         Log.e("Log :", message + ": case 6");
                         break;
                     case 7:
+                        imageView.setImageResource(R.drawable.t);
                         Log.e("Log :", message + ": case 7");
                         break;
                 }
