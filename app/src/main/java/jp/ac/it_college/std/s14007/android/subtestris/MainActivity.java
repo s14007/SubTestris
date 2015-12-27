@@ -80,8 +80,30 @@ public class MainActivity extends AppCompatActivity implements Board.Callback{
         handler.post(new Runnable() {
             @Override
             public void run() {
-                String m = String.valueOf(id);
-                Log.e("Log :", m);
+                String message = String.valueOf(id);
+                switch (id) {
+                    case 1:
+                        Log.e("Log :", message + ": case 1");
+                        break;
+                    case 2:
+                        Log.e("Log :", message + ": case 2");
+                        break;
+                    case 3:
+                        Log.e("Log :", message + ": case 3");
+                        break;
+                    case 4:
+                        Log.e("Log :", message + ": case 4");
+                        break;
+                    case 5:
+                        Log.e("Log :", message + ": case 5");
+                        break;
+                    case 6:
+                        Log.e("Log :", message + ": case 6");
+                        break;
+                    case 7:
+                        Log.e("Log :", message + ": case 7");
+                        break;
+                }
             }
         });
 //        String m = String.valueOf(id);
