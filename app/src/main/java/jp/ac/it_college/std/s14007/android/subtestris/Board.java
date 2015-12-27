@@ -187,7 +187,7 @@ public class Board extends SurfaceView implements SurfaceHolder.Callback {
             tetrominoList.add(fallingTetromino); //積み重なるようにする
             clearRows(findFullRows());  //ブロックが一行揃ったら消す
             spawnTetromino();
-//            callback.stockId(id);
+            callback.stockId(id);
         }
     }
 
