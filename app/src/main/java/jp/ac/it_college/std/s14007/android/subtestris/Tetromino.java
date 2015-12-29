@@ -18,35 +18,33 @@ import java.util.Random;
  * Created by s14007 on 15/12/23.
  */
 public class Tetromino {
-    private static final HashMap<Orientation, Orientation> CLOCKWISE_ROTATIONS;
     private static Paint paint = new Paint();
-
-    static {
-        CLOCKWISE_ROTATIONS = new HashMap<>();
-        CLOCKWISE_ROTATIONS.put(Orientation.Right, Orientation.Down);
-        CLOCKWISE_ROTATIONS.put(Orientation.Down, Orientation.Left);
-        CLOCKWISE_ROTATIONS.put(Orientation.Left, Orientation.Up);
-        CLOCKWISE_ROTATIONS.put(Orientation.Up, Orientation.Right);
-    }
-
+    private static final HashMap<Orientation, Orientation> CLOCKWISE_ROTATIOWS;
     private Board board;
-    private Keep keep;
     private Coordinate base;
     private Type type;
     private Orientation orientation;
     private Coordinate[] blockBoardCoordinates = Coordinate.asArray(0, 0, 0, 0, 0, 0, 0, 0, 0);
     private RectF dst = new RectF();
 
+    static {
+        CLOCKWISE_ROTATIOWS = new HashMap<>();
+        CLOCKWISE_ROTATIOWS.put(Orientation.Right, Orientation.Down);
+        CLOCKWISE_ROTATIOWS.put(Orientation.Down, Orientation.Left);
+        CLOCKWISE_ROTATIOWS.put(Orientation.Left, Orientation.Up);
+        CLOCKWISE_ROTATIOWS.put(Orientation.Up, Orientation.Right);
+    }
 
     public Tetromino(Board board) {
         this.board = board;
         base = new Coordinate(0, 0);
-        type = type.nextType();
+        type = Type.nextType();
         orientation = Orientation.Right;
-        calcBlockBoardCoordinates();
+        calcBlockBorardCoordinates();
+        nextQueue();
     }
 
-    public void calcBlockBoardCoordinates() {
+    private void calcBlockBorardCoordinates() {
         Coordinate[] localCoordinates = type.getLocalBlockCoordinates(orientation);
         for (int i = 0; i < localCoordinates.length; i++) {
             Coordinate local = localCoordinates[i];
@@ -58,11 +56,14 @@ public class Tetromino {
     public void setPosition(int x, int y) {
         base.x = x;
         base.y = y;
-        calcBlockBoardCoordinates();
-        board.sendId(type.getId());
+        calcBlockBorardCoordinates();
     }
 
-    public void move(Input input) {
+    public void nextQueue() {
+        board.getQueue(type.getQueue());
+    }
+
+    public  void move(Input input) {
         switch (input) {
             case Up:
                 base.y += 1;
@@ -80,68 +81,7 @@ public class Tetromino {
                 rotate();
                 break;
         }
-        calcBlockBoardCoordinates();
-    }
-
-    public void rotate() {
-        rotate(false);
-    }
-
-    public void rotate(boolean isCCW) {
-        orientation = CLOCKWISE_ROTATIONS.get(orientation);
-        if (isCCW) {
-            orientation = CLOCKWISE_ROTATIONS.get(orientation);
-            orientation = CLOCKWISE_ROTATIONS.get(orientation);
-        }
-        calcBlockBoardCoordinates();
-    }
-
-    public void draw(Canvas canvas) {
-        for (Coordinate point : blockBoardCoordinates) {
-            board.translateCanvasCoordinate(canvas, dst, point.x, point.y);
-            canvas.drawBitmap(Type.blockBitmap, type.getRect(), dst, paint);
-        }
-    }
-
-
-    public boolean intersect(Tetromino target) {
-        for (Coordinate blockCoordinate : blockBoardCoordinates) {
-            for (Coordinate targetBlockCoordinate : target.blockBoardCoordinates) {
-                if (blockCoordinate.x == targetBlockCoordinate.x
-                        && blockCoordinate.y == targetBlockCoordinate.y) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public boolean isOutOfBounds() {
-        for (Coordinate blockCoordinate : blockBoardCoordinates) {
-            if (blockCoordinate.x < 0 || blockCoordinate.x >= 10
-                    || blockCoordinate.y <= 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public Coordinate[] getCoordinates() {
-        return blockBoardCoordinates;
-    }
-
-    public int clearRowAndAdjustDown(int row) {
-        ArrayList<Coordinate> newCoodinates = new ArrayList<>();
-        for (Coordinate coordinate : blockBoardCoordinates) {
-            if (coordinate.y > row) {
-                newCoodinates.add(new Coordinate(coordinate.x, coordinate.y - 1));
-            }
-            if (coordinate.y < row) {
-                newCoodinates.add(coordinate);
-            }
-        }
-        blockBoardCoordinates = newCoodinates.toArray(new Coordinate[newCoodinates.size()]);
-        return blockBoardCoordinates.length;
+        calcBlockBorardCoordinates();
     }
 
     public void undo(Input input) {
@@ -162,7 +102,67 @@ public class Tetromino {
                 rotate(true);
                 break;
         }
-        calcBlockBoardCoordinates();
+        calcBlockBorardCoordinates();
+    }
+
+    public void rotate() {
+        rotate(false);
+    }
+
+    public void rotate(boolean isCOW) {
+        orientation = CLOCKWISE_ROTATIOWS.get(orientation);
+        if (isCOW) {
+            orientation = CLOCKWISE_ROTATIOWS.get(orientation);
+            orientation = CLOCKWISE_ROTATIOWS.get(orientation);
+        }
+        calcBlockBorardCoordinates();
+    }
+
+    public void draw(Canvas canvas) {
+        for (Coordinate point : blockBoardCoordinates) {
+            board.translateCanvasCoordinate(canvas, dst, point.x, point.y);
+            canvas.drawBitmap(Type.blockBitmap, type.getRect(), dst, paint);
+        }
+    }
+
+    public boolean intersect(Tetromino target) {
+        for (Coordinate blockCoordinate : blockBoardCoordinates) {
+            for (Coordinate targetBlockCoordinate : target.blockBoardCoordinates) {
+                if (blockCoordinate.x == targetBlockCoordinate.x
+                        && blockCoordinate.y == targetBlockCoordinate.y) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isOutOfBounds() {
+        for (Coordinate blockCoodinate : blockBoardCoordinates) {
+            if (blockCoodinate.x < 0 || blockCoodinate.x >= 10
+                    || blockCoodinate.y <= 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Coordinate[] getCoordinates() {
+        return blockBoardCoordinates;
+    }
+
+    public int clearRowAndAdjustDown(int row) {
+        ArrayList<Coordinate> newCoordinates = new ArrayList<>();
+        for (Coordinate coordinate : blockBoardCoordinates) {
+            if (coordinate.y > row) {
+                newCoordinates.add(new Coordinate(coordinate.x, coordinate.y -1));
+            }
+            if (coordinate.y < row) {
+                newCoordinates.add(coordinate);
+            }
+        }
+        blockBoardCoordinates = newCoordinates.toArray(new Coordinate[newCoordinates.size()]);
+        return blockBoardCoordinates.length;
     }
 
     public enum Orientation {
@@ -170,19 +170,18 @@ public class Tetromino {
     }
 
     public enum Type {
-        I(1), O(2), S(3), Z(4), J(5), L(6), T(7),;
+        I(1), O(2), S(3), Z(4), L(5), J(6), T(7);
 
         private static final Map<Type, Map<Orientation, Coordinate[]>> LOCAL_BLOCK_COORDINATES;
-        private static final int SHUFFLE_COUNT = 100;
-        private static Bitmap blockBitmap = null;
         private static LinkedList<Type> queue = new LinkedList<>();
+        private static Bitmap blockBitmap = null;
         private static Random random = new Random();
+        private static final int SHUFFLE_COUNT = 100;
         private static Map<Type, Rect> blockRect = new HashMap<>();
 
         static {
             LOCAL_BLOCK_COORDINATES = new HashMap<>();
             HashMap<Orientation, Coordinate[]> coordinates;
-
 
             coordinates = new HashMap<>();
             coordinates.put(Orientation.Right, Coordinate.asArray(-1, 0, 0, 0, 1, 0, 2, 0));
@@ -203,66 +202,44 @@ public class Tetromino {
             coordinates.put(Orientation.Down, Coordinate.asArray(1, -1, 0, -1, 0, 0, -1, 0));
             coordinates.put(Orientation.Left, Coordinate.asArray(0, -1, 0, 0, 1, 0, 1, 1));
             coordinates.put(Orientation.Up, Coordinate.asArray(1, -1, 0, -1, 0, 0, -1, 0));
-            LOCAL_BLOCK_COORDINATES.put(S, coordinates);
+            LOCAL_BLOCK_COORDINATES.put(Z, coordinates);
 
             coordinates = new HashMap<>();
             coordinates.put(Orientation.Right, Coordinate.asArray(1, -1, 1, 0, 0, 0, 0, 1));
             coordinates.put(Orientation.Down, Coordinate.asArray(1, 1, 0, 1, 0, 0, -1, 0));
             coordinates.put(Orientation.Left, Coordinate.asArray(1, -1, 1, 0, 0, 0, 0, 1));
             coordinates.put(Orientation.Up, Coordinate.asArray(1, 1, 0, 1, 0, 0, -1, 0));
-            LOCAL_BLOCK_COORDINATES.put(Z, coordinates);
+            LOCAL_BLOCK_COORDINATES.put(S, coordinates);
 
             coordinates = new HashMap<>();
-            coordinates.put(Orientation.Right, Coordinate.asArray(1, -1, 0, -1, 0, 0, 0, 1));
-            coordinates.put(Orientation.Down, Coordinate.asArray(1, 1, 1, 0, 0, 0, -1, 0));
-            coordinates.put(Orientation.Left, Coordinate.asArray(0, -1, 0, 0, 0, 1, -1, 1));
-            coordinates.put(Orientation.Up, Coordinate.asArray(-1, -1, -1, 0, 0, 0, 1, 0));
-            LOCAL_BLOCK_COORDINATES.put(J, coordinates);
-
-            coordinates = new HashMap<>();
-            coordinates.put(Orientation.Right, Coordinate.asArray(-1, -1, 0, -1, 0, 0, 0, 1));
-            coordinates.put(Orientation.Down, Coordinate.asArray(1, -1, 1, 0, 0, 0, -1, 0));
-            coordinates.put(Orientation.Left, Coordinate.asArray(0, -1, 0, 0, 0, 1, 1, 1));
-            coordinates.put(Orientation.Up, Coordinate.asArray(1, 0, 0, 0, -1, 0, -1, 1));
+            coordinates.put(Orientation.Down, Coordinate.asArray(0, -1, 0, 0, 0, 1, -1, 1));
+            coordinates.put(Orientation.Right, Coordinate.asArray(-1, -1, -1, 0, 0, 0, 1, 0));
+            coordinates.put(Orientation.Left, Coordinate.asArray(1, 1, 1, 0, 0, 0, -1, 0));
+            coordinates.put(Orientation.Up, Coordinate.asArray(1, -1, 0, -1, 0, 0, 0, 1));
             LOCAL_BLOCK_COORDINATES.put(L, coordinates);
 
             coordinates = new HashMap<>();
-            coordinates.put(Orientation.Right, Coordinate.asArray(1, 0, 0, 0, -1, 0, 0, 1));
-            coordinates.put(Orientation.Down, Coordinate.asArray(0, -1, 0, 0, 0, 1, -1, 0));
-            coordinates.put(Orientation.Left, Coordinate.asArray(1, 0, 0, 0, -1, 0, 0, -1));
-            coordinates.put(Orientation.Up, Coordinate.asArray(0, -1, 0, 0, 0, 1, 1, 0));
-            LOCAL_BLOCK_COORDINATES.put(T, coordinates);
+            coordinates.put(Orientation.Right, Coordinate.asArray(1, 0, 0, 0, -1, 0, -1, 1));
+            coordinates.put(Orientation.Down, Coordinate.asArray(0, -1, 0, 0, 0, 1, 1, 1));
+            coordinates.put(Orientation.Left, Coordinate.asArray(1, -1, 1, 0, 0, 0, -1, 0));
+            coordinates.put(Orientation.Up, Coordinate.asArray(-1, -1, 0, -1, 0, 0, 0, 1));
+            LOCAL_BLOCK_COORDINATES.put(J, coordinates);
 
+            coordinates = new HashMap<>();
+            coordinates.put(Orientation.Right, Coordinate.asArray(0, -1, 0, 0, 0, 1, 1, 0));
+            coordinates.put(Orientation.Down, Coordinate.asArray(1, 0, 0, 0, -1, 0, 0, -1));
+            coordinates.put(Orientation.Left, Coordinate.asArray(0, -1, 0, 0, 0, 1, -1, 0));
+            coordinates.put(Orientation.Up, Coordinate.asArray(1, 0, 0, 0, -1, 0, 0, 1));
+            LOCAL_BLOCK_COORDINATES.put(T, coordinates);
         }
 
         private final int id;
-
 
         Type(int id) {
             this.id = id;
         }
 
-
-        public static Type nextType() {
-            if (queue.size() == 0) {
-                generateQueue();
-            }
-            return queue.remove();
-
-        }
-
-        public static void generateQueue() {
-            queue.addAll(Arrays.asList(I, O, S, Z, J, L, T));
-            for (int i = 0; i < SHUFFLE_COUNT; i++) {
-                int src = random.nextInt(queue.size());
-                int dst = random.nextInt(queue.size());
-                Type tmp = queue.get(src);
-                queue.set(src, queue.get(dst));
-                queue.set(dst, tmp);
-            }
-        }
-
-        public static boolean isBitmapinitialized() {
+        public static boolean isBitmapInitialized() {
             return blockBitmap != null;
         }
 
@@ -286,8 +263,35 @@ public class Tetromino {
             return blockRect.get(this);
         }
 
+        public static Type nextType() {
+            if (queue.size() == 0) {
+                generateQueue();
+            }
+            return queue.remove();
+        }
+
+        public static void generateQueue() {
+            queue.addAll(Arrays.asList(I, O, S, Z, J, L, T));
+            for (int i = 0; i < SHUFFLE_COUNT; i++) {
+                int src = random.nextInt(queue.size());
+                int dst = random.nextInt(queue.size());
+                Type tmp = queue.get(src);
+                queue.set(src, queue.get(dst));
+                queue.set(dst, tmp);
+            }
+        }
+
         public Coordinate[] getLocalBlockCoordinates(Orientation orientation) {
-            return LOCAL_BLOCK_COORDINATES.get(this).get(orientation);
+            return  LOCAL_BLOCK_COORDINATES.get(this).get(orientation);
+        }
+
+        public LinkedList<Type> getQueue() {
+            return queue;
+        }
+
+        public static void setQueue(LinkedList<Type> queue) {
+            Type.queue = queue;
         }
     }
 }
+

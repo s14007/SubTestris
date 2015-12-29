@@ -1,5 +1,7 @@
 package jp.ac.it_college.std.s14007.android.subtestris;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -8,16 +10,18 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements Board.Callback{
     private Board board;
     private Handler handler;
-    private Tetromino.Type type;
-    private int id;
+    private int current;
+    private int pastRecord = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,10 +29,10 @@ public class MainActivity extends AppCompatActivity implements Board.Callback{
         handler = new Handler();
         setContentView(R.layout.activity_main);
 
+        loadBestScore();
         Bitmap srcImage = BitmapFactory.decodeResource(getResources(),
                 android.R.drawable.ic_media_play);
         Matrix matrix = new Matrix();
-
         matrix.postRotate(90);
         Bitmap fallImage = Bitmap.createBitmap(srcImage, 0, 0,
                 srcImage.getWidth(), srcImage.getHeight(), matrix, true);
@@ -37,86 +41,173 @@ public class MainActivity extends AppCompatActivity implements Board.Callback{
         matrix.postRotate(90);
         Bitmap leftImage = Bitmap.createBitmap(srcImage, 0, 0,
                 srcImage.getWidth(), srcImage.getHeight(), matrix, true);
-        ((ImageButton) findViewById(R.id.left)).setImageBitmap(leftImage);
+        ((ImageButton)findViewById(R.id.left)).setImageBitmap(leftImage);
 
-        board = (Board) findViewById(R.id.board);
+        board = (Board)findViewById(R.id.board);
         board.setCallback(this);
+
     }
 
     public void gameButtonClick(View v) {
+        final BooleanWrapper isContinue = new BooleanWrapper(false);
         switch (v.getId()) {
             case R.id.left:
+                v.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        isContinue.value = true;
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (!isContinue.value) {
+                                    return;
+                                }
+                                board.send(Input.Left);
+                                handler.postDelayed(this, 100);
+                            }
+                        });
+                        return true;
+                    }
+                });
+
+                v.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_UP) {
+                            isContinue.value = false;
+                        }
+                        return false;
+                    }
+                });
                 board.send(Input.Left);
                 break;
+
             case R.id.right:
+                v.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        isContinue.value = true;
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (!isContinue.value) {
+                                    return;
+                                }
+                                board.send(Input.Right);
+                                handler.postDelayed(this, 100);
+                            }
+                        });
+                        return false;
+                    }
+                });
+
+                v.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_UP) {
+                            isContinue.value = false;
+                        }
+                        return false;
+                    }
+                });
+
                 board.send(Input.Right);
                 break;
             case R.id.fall:
+                v.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        isContinue.value = true;
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (!isContinue.value) {
+                                    return;
+                                }
+                                board.send(Input.Down);
+                                handler.postDelayed(this, 100);
+                            }
+                        });
+                        return false;
+                    }
+                });
+
+                v.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_UP) {
+                            isContinue.value = false;
+                        }
+                        return false;
+                    }
+                });
+
                 board.send(Input.Down);
                 break;
-            case R.id.rotate:
+            case R.id.rotate:;
                 board.send(Input.Rotate);
-                break;
-            case R.id.keep:
-                board.send(Input.Keep);
                 break;
         }
     }
 
+    private static class BooleanWrapper {
+        public boolean value;
+
+        public BooleanWrapper(boolean value) {
+            this.value = value;
+        }
+    }
 
     @Override
     public void scoreAdd(final int score) {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                TextView scoreVIew = (TextView) findViewById(R.id.score);
-                int current = Integer.parseInt(scoreVIew.getText().toString());
+                TextView scoreView = (TextView) findViewById(R.id.score);
+//                current = Integer.parseInt(scoreView.getText().toString());
                 current += score;
-                scoreVIew.setText(String.valueOf(current));
+                scoreView.setText(String.valueOf(current));
             }
         });
     }
 
-    public void stockId(final int id) {
+    public void onGameOver() {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                String message = String.valueOf(id);
-                ImageView imageView = (ImageView)findViewById(R.id.nextTetromino);
-                switch (id) {
-                    case 1:
-                        imageView.setImageResource(R.drawable.i);
-                        Log.e("Log :", message + ": case 1");
-                        break;
-                    case 2:
-                        imageView.setImageResource(R.drawable.o);
-                        Log.e("Log :", message + ": case 2");
-                        break;
-                    case 3:
-                        imageView.setImageResource(R.drawable.z);
-                        Log.e("Log :", message + ": case 3");
-                        break;
-                    case 4:
-                        imageView.setImageResource(R.drawable.s);
-                        Log.e("Log :", message + ": case 4");
-                        break;
-                    case 5:
-                        imageView.setImageResource(R.drawable.l);
-                        Log.e("Log :", message + ": case 5");
-                        break;
-                    case 6:
-                        imageView.setImageResource(R.drawable.j);
-                        Log.e("Log :", message + ": case 6");
-                        break;
-                    case 7:
-                        imageView.setImageResource(R.drawable.t);
-                        Log.e("Log :", message + ": case 7");
-                        break;
-                }
+                resetScore();
+                Toast.makeText(MainActivity.this, "Game Over", Toast.LENGTH_SHORT).show();
             }
         });
-//        String m = String.valueOf(id);
-//        Log.e("Log :", m);
+    }
+
+    public void saveBestScore() {
+        if (pastRecord < current) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    SharedPreferences preferences = getSharedPreferences("dataSave", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putInt("bestScore", current);
+                    Toast.makeText(MainActivity.this, "New record!", Toast.LENGTH_SHORT).show();
+                    editor.apply();
+                    loadBestScore();
+                }
+            });
+        }
+    }
+
+    public void resetScore() {
+        current = 0;
+        TextView scoreView = (TextView)findViewById(R.id.score);
+        scoreView.setText(String.valueOf(current));
+    }
+
+    private void loadBestScore() {
+        TextView bestScoreView = (TextView)findViewById(R.id.best_score);
+        SharedPreferences preferences = getSharedPreferences("dataSave", Context.MODE_PRIVATE);
+        pastRecord = preferences.getInt("bestScore", 0);
+        bestScoreView.setText(String.valueOf(pastRecord));
     }
 
 }
