@@ -123,9 +123,7 @@
             android:layout_height="100dp"
             android:layout_weight="1"
             android:onClick="gameButtonClick"
-            android:scaleType="fitCenter"
-
-            />
+            android:scaleType="fitCenter" />
 
         <ImageButton
             android:id="@+id/rotate"

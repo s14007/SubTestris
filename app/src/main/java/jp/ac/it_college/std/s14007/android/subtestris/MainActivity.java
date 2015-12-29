@@ -17,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.LinkedList;
+
 public class MainActivity extends AppCompatActivity implements Board.Callback{
     private Board board;
     private Handler handler;
@@ -208,6 +210,39 @@ public class MainActivity extends AppCompatActivity implements Board.Callback{
         SharedPreferences preferences = getSharedPreferences("dataSave", Context.MODE_PRIVATE);
         pastRecord = preferences.getInt("bestScore", 0);
         bestScoreView.setText(String.valueOf(pastRecord));
+    }
+
+    public void nextTetromino(final LinkedList<Tetromino.Type> queue) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                ImageView nextTetromino = (ImageView)findViewById(R.id.nextTetromino);
+                String message = String.valueOf(queue.get(0));
+                switch (message) {
+                    case "I":
+                        nextTetromino.setImageResource(R.drawable.i);
+                        break;
+                    case "O":
+                        nextTetromino.setImageResource(R.drawable.o);
+                        break;
+                    case "Z":
+                        nextTetromino.setImageResource(R.drawable.z);
+                        break;
+                    case "S":
+                        nextTetromino.setImageResource(R.drawable.s);
+                        break;
+                    case "L":
+                        nextTetromino.setImageResource(R.drawable.l);
+                        break;
+                    case "J":
+                        nextTetromino.setImageResource(R.drawable.j);
+                        break;
+                    case "T":
+                        nextTetromino.setImageResource(R.drawable.t);
+                        break;
+                }
+            }
+        });
     }
 
 }

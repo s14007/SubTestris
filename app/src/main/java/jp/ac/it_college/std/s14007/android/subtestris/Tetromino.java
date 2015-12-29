@@ -289,7 +289,7 @@ public class Tetromino {
             return queue;
         }
 
-        public static void setQueue(LinkedList<Type> queue) {
+        public void setQueue(LinkedList<Type> queue) {
             Type.queue = queue;
         }
     }
