@@ -30,6 +30,7 @@ public class Board extends SurfaceView implements SurfaceHolder.Callback {
     private ArrayList<Tetromino> tetrominoList = new ArrayList<>();
     private long count = 0;
     private Tetromino.Type type;
+    private LinkedList<Tetromino.Type> queue;
 
     public Board(Context context) {
         super(context);
@@ -117,6 +118,7 @@ public class Board extends SurfaceView implements SurfaceHolder.Callback {
         if (queue.size() != 0) {
             String m = String.valueOf(queue.get(0));
             Log.e("queue :", m);
+            this.queue = queue;
         }
     }
 
@@ -199,6 +201,7 @@ public class Board extends SurfaceView implements SurfaceHolder.Callback {
             tetrominoList.add(fallingTetromino);
             clearRows(findFullRows());
             spawnTetromino();
+            callback.nextTetromino(queue);
         }
     }
 
@@ -253,5 +256,6 @@ public class Board extends SurfaceView implements SurfaceHolder.Callback {
         void scoreAdd(int score);
         void onGameOver();
         void saveBestScore();
+        void nextTetromino(LinkedList<Tetromino.Type> queue);
     }
 }
